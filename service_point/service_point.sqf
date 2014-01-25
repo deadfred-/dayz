@@ -48,7 +48,7 @@ _rearm_costs = [
 	["Tank",["ItemBriefcase100oz",4]], // 
 	["AllVehicles",["ItemGoldBar10oz",1]] // 1 10oz Gold for all other vehicles
 ];
-_rearm_magazineCount = 3; // amount of magazines to be added to the vehicle weapon
+_rearm_magazineCount = 1; // amount of magazines to be added to the vehicle weapon
 
 // ----------------- CONFIG END -----------------
 
