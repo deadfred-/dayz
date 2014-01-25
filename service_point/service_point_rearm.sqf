@@ -24,10 +24,7 @@ _magazines = getArray (configFile >> "CfgWeapons" >> _weaponType >> "magazines")
 _ammo = _magazines select 0; // rearm with the first magazine
 
 // remove all magazines
-_magazines = _vehicle magazinesTurret _turret;
-{
-	_vehicle removeMagazineTurret [_x, _turret];
-} forEach _magazines;
+_vehicle removeMagazineTurret [_ammo, _turret];
 
 // add magazines
 for "_i" from 1 to _magazineCount do {

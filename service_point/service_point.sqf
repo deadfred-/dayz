@@ -6,7 +6,7 @@ private ["_folder","_servicePointClasses","_maxDistance","_actionTitleFormat","_
 
 // general settings
 _folder = "service_point\"; // folder where the service point scripts are saved, relative to the mission file
-_servicePointClasses = dayz_fuelpumparray; // service point classes (can be house, vehicle and unit classes)
+_servicePointClasses = ["HeliHCivil"]; // service point classes (can be house, vehicle and unit classes)
 _maxDistance = 10; // maximum distance from a service point for the options to be shown
 _actionTitleFormat = "%1 (%2)"; // text of the vehicle menu, %1 = action name (Refuel, Repair, Rearm), %2 = costs (see format below)
 _actionCostsFormat = "%2 %1"; // %1 = item name, %2 = item count
@@ -22,7 +22,8 @@ _refuel_amount = 0.05; // amount of fuel to add with every update (in percent)
 // repair settings
 _repair_enable = true; // enable or disable the repair option
 _repair_costs = [
-	["Air",["ItemGoldBar",5]], // 5 Gold for helicopters and planes
+	["Air",["ItemBriefcase100oz",1]], // 
+	["Tank",["ItemBriefcase100oz",2]], // 
 	["AllVehicles",["ItemGoldBar",2]] // 2 Gold for all other vehicles
 ];
 _repair_repairTime = 2; // time needed to repair each damaged part (in seconds)
@@ -30,8 +31,21 @@ _repair_repairTime = 2; // time needed to repair each damaged part (in seconds)
 // rearm settings
 _rearm_enable = true; // enable or disable the rearm option
 _rearm_costs = [
-	["ArmoredSUV_PMC_DZE",["ItemGoldBar10oz",2]], // special costs for a single vehicle type
-	["Air",["ItemGoldBar10oz",2]], // 2 10oz Gold for helicopters and planes
+	["ArmoredSUV_PMC_DZE",["ItemBriefcase100oz",1]], // 
+	["HMMWV_TOW",["ItemBriefcase100oz",2]],
+	["UAZ_SPG9_INS",["ItemBriefcase100oz",2]],
+	["Ural_ZU23_CDF",["ItemBriefcase100oz",5]],
+	["BRDM2_HQ_Gue",["ItemBriefcase100oz",1]],
+	["BTR90_HQ",["ItemBriefcase100oz",1]],
+	["LAV25_HQ",["ItemBriefcase100oz",1]],
+	["Offroad_SPG9_Gue",["ItemBriefcase100oz",1]],
+	["KA60_GL_PMC",["ItemBriefcase100oz",2]],
+	["AH6J_PMC",["ItemBriefcase100oz",2]],
+	["L39_TK_EP1",["ItemBriefcase100oz",2]],
+	["AW159_Lynx_BAF",["ItemBriefcase100oz",2]],
+	
+	["Air",["ItemBriefcase100oz",3]], // 
+	["Tank",["ItemBriefcase100oz",4]], // 
 	["AllVehicles",["ItemGoldBar10oz",1]] // 1 10oz Gold for all other vehicles
 ];
 _rearm_magazineCount = 3; // amount of magazines to be added to the vehicle weapon
@@ -115,7 +129,18 @@ _fnc_getWeapons = {
 			_weaponName = getText (configFile >> "CfgWeapons" >> _x >> "displayName");
 			_weapons set [count _weapons, [_x, _weaponName, _turret]];
 		} forEach _weaponsTurret;
+	} else {
+		private ["_turret","_weaponsTurret"];
+		_turret = [-1];
+		_weaponsTurret = vehicle player weaponsTurret [-1];
+		{
+			private "_weaponName";
+			_weaponName = getText (configFile >> "CfgWeapons" >> _x >> "displayName");
+			_weapons set [count _weapons, [_x, _weaponName, _turret]];
+			
+		} forEach _weaponsTurret;
 	};
+	
 	_weapons
 };
 
@@ -149,7 +174,7 @@ while {true} do {
 				_actionTitle = ["Repair", _costs] call _fnc_actionTitle;
 				SP_repair_action = _vehicle addAction [_actionTitle, _folder + "service_point_repair.sqf", [_servicePoint, _costs, _repair_repairTime], -1, false, true, "", _actionCondition];
 			};
-			if ((_role call _fnc_isArmed) && (count SP_rearm_actions == 0) && _rearm_enable) then {
+			if (count SP_rearm_actions == 0 && _rearm_enable) then {
 				private ["_weapons"];
 				_costs = [_vehicle, _rearm_costs] call _fnc_getCosts;
 				_weapons = [_vehicle, _role] call _fnc_getWeapons;
@@ -161,6 +186,7 @@ while {true} do {
 					SP_rearm_actions set [count SP_rearm_actions, SP_rearm_action];
 				} forEach _weapons;
 			};
+
 			if (!_messageShown && _message != "") then {
 				_messageShown = true;
 				_vehicle vehicleChat _message;
