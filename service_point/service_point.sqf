@@ -30,6 +30,7 @@ _repair_repairTime = 2; // time needed to repair each damaged part (in seconds)
 
 // rearm settings
 _rearm_enable = true; // enable or disable the rearm option
+_blockedAmmoNames=["S-5","Hydra","CRV7"]; // ammo names you wish to exclude from rearming.  Leave empty [] to allow all
 _rearm_costs = [
 	["ArmoredSUV_PMC_DZE",["ItemBriefcase100oz",1]], // 
 	["HMMWV_TOW",["ItemBriefcase100oz",2]],
@@ -130,13 +131,18 @@ _fnc_getWeapons = {
 			_weapons set [count _weapons, [_x, _weaponName, _turret]];
 		} forEach _weaponsTurret;
 	} else {
-		private ["_turret","_weaponsTurret"];
+		private ["_turret","_weaponsTurret","_badAmmo"];
 		_turret = [-1];
 		_weaponsTurret = vehicle player weaponsTurret [-1];
 		{
 			private "_weaponName";
 			_weaponName = getText (configFile >> "CfgWeapons" >> _x >> "displayName");
-			_weapons set [count _weapons, [_x, _weaponName, _turret]];
+			
+			// block ammo types
+			_badAmmo = _weaponName in _blockedAmmoNames;
+			if (!_badAmmo) then {
+				_weapons set [count _weapons, [_x, _weaponName, _turret]];
+			};
 			
 		} forEach _weaponsTurret;
 	};
